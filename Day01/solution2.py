@@ -7,7 +7,7 @@ from pathlib import Path
 # get correct subfolder path
 scriptPath = Path(__file__).resolve()
 scriptDir = scriptPath.parent
-inputPath = scriptDir / "input1.txt"
+inputPath = scriptDir / "input.txt"
 
 debug = False
 
