@@ -9,17 +9,15 @@ from pathlib import Path
 scriptPath = Path(__file__).resolve()
 scriptDir = scriptPath.parent
 inputPath = scriptDir / "input.txt"
-f = open(inputPath)
 
-answer = 0
 cardCount = {}
 
 # initialize cardCount
-for lineIndex, line in enumerate(f):
+for lineIndex, line in enumerate(open(inputPath), start=1):
     cardCount[lineIndex] = 1
 
 # parse input into tables
-for lineIndex, line in enumerate(f):
+for lineIndex, line in enumerate(open(inputPath), start=1):
     tempStr = line.split(":")
     tempStr = tempStr[1].split("|")
 
@@ -33,11 +31,10 @@ for lineIndex, line in enumerate(f):
     overlap = set(pickedNumbers).intersection(winningNumbers)
     count = len(overlap)
 
-    # get value of the card (2^(n-1))
-    value = 0
+    # increase amount of next tickets
     if count > 0:
-        value = 2 ** (count - 1)
+        for i in range(1, count + 1):
+            cardCount[lineIndex + i] += cardCount[lineIndex]
 
-    # add value to answer
-    answer += value
-print(answer)
+# calculate total amount
+print(sum(cardCount.values()))
