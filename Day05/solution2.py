@@ -20,7 +20,7 @@ splitInput = data.split("\n\n")
 
 def getValueFromFakeArray(id, key):
     for d in listOfFakeArrays[id]:
-        if d[0] < key and d[1] >= key:
+        if d[0] <= key and d[1] >= key:
             return d[2] + key - d[0]
     return key
 
@@ -49,13 +49,17 @@ for mapId, block in enumerate(splitInput):
                 fArray.append([keyStart, keyEnd, valueStart])
         listOfFakeArrays.append(fArray)
 
-answer = []
+answer = 9999999999
+result = None
 seed = None
 for i, str in enumerate(seeds):
+    print("i:", i)
     if (i % 2) == 0:
         seed = int(str)
     else:
         for j in range(int(str)):
-            answer.append(evaluateSeed(seed + j))
+            result = evaluateSeed(seed + j)
+            if result < answer:
+                answer = result
 
 print("Answer:", min(answer))

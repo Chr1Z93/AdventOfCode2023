@@ -18,7 +18,7 @@ splitInput = data.split("\n\n")
 
 def getValueFromFakeArray(id, key):
     for d in listOfFakeArrays[id]:
-        if d[0] < key and d[1] >= key:
+        if d[0] <= key and d[1] >= key:
             return d[2] + key - d[0]
     return key
 
