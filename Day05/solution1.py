@@ -6,26 +6,7 @@
 # What is the lowest location number that corresponds to any of the initial seed numbers?
 
 from pathlib import Path
-import io
-import time
-
-
-def generateMap(tempStr):
-    keyStart = int(tempStr[1])
-    keyCount = int(tempStr[2])
-    valueStart = int(tempStr[0])
-    return dict.fromkeys(range(keyStart, keyStart + keyCount), [valueStart, keyStart])
-
-
-def getValue(mapId, key):
-    value = mapOfMaps[mapId].get(key, key)
-    if value != key:
-        value = value[0] + key - value[1]
-    return value
-
-
-# get the start time
-start = time.time()
+from io import StringIO
 
 # get correct subfolder path
 scriptPath = Path(__file__).resolve()
@@ -34,39 +15,38 @@ inputPath = scriptDir / "input.txt"
 data = Path(inputPath).read_text()
 splitInput = data.split("\n\n")
 
-seeds = []
-mapOfMaps = {}
 
-for i in range(1, 8):
-    mapOfMaps[i] = {}
+def getValueFromFakeArray(id, key):
+    for d in listOfFakeArrays[i]:
+        if d[0] < key and d[1] >= key:
+            return d[2] + key - d[0]
+    return key
+
+
+seeds = []
+listOfFakeArrays = []
 
 for mapId, block in enumerate(splitInput):
     if mapId == 0:
         tempStr = block.split(":")
         seeds = tempStr[1].split()
     else:
-        map = mapOfMaps[mapId]
-        for i, line in enumerate(io.StringIO(block)):
-            if i != 0:
-                newMap = generateMap(line.split())
-                map.update(newMap)
-    print("mapId:", mapId, "Time:", time.time() - start)
+        fArray = []
+        for i, line in enumerate(StringIO(block)):
+            if i == 0:
+                continue
+            tempStr = line.split()
+            keyStart = int(tempStr[1])
+            keyEnd = keyStart + int(tempStr[2]) - 1
+            valueStart = int(tempStr[0])
+            fArray.append([keyStart, keyEnd, valueStart])
+        listOfFakeArrays.append(fArray)
 
-answer = 0
+answer = []
 for seed in seeds:
     num = int(seed)
-    result1 = getValue(1, num)
-    result2 = getValue(2, result1)
-    result3 = getValue(3, result2)
-    result4 = getValue(4, result3)
-    result5 = getValue(5, result4)
-    result6 = getValue(6, result5)
-    result7 = getValue(7, result6)
+    for i in range(0, 7):
+        num = getValueFromFakeArray(i, num)
+    answer.append(num)
 
-    # print("Seed:", num)
-    # print("Conversion:", result1, result2, result3, result4, result5, result6, result7)
-
-    if answer == 0 or answer > result7:
-        answer = result7
-print("Answer:", answer)
-print("Time: ", time.time() - start)
+print("Answer:", min(answer))
