@@ -3,6 +3,8 @@
 # what type of water to use with each kind of fertilizer, and so on.
 # Every type of seed, soil, fertilizer and so on is identified with a number, but numbers are reused by each category
 # - that is, soil 123 and fertilizer 123 aren't necessarily related to each other.
+# The values on the initial seeds: line come in pairs.
+# Within each pair, the first value is the start of the range and the second value is the length of the range.
 # What is the lowest location number that corresponds to any of the initial seed numbers?
 
 from pathlib import Path
@@ -48,8 +50,12 @@ for mapId, block in enumerate(splitInput):
         listOfFakeArrays.append(fArray)
 
 answer = []
-for seed in seeds:
-    num = int(seed)
-    answer.append(evaluateSeed(num))
+seed = None
+for i, str in enumerate(seeds):
+    if (i % 2) == 0:
+        seed = int(str)
+    else:
+        for j in range(int(str)):
+            answer.append(evaluateSeed(seed + j))
 
 print("Answer:", min(answer))
