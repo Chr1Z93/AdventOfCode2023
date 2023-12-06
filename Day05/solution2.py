@@ -17,10 +17,30 @@ inputPath = scriptDir / "input.txt"
 data = Path(inputPath).read_text()
 splitInput = data.split("\n\n")
 
+lastHit = None
+lastId = None
+lastEnd = None
+
 
 def getValueFromFakeArray(id, key):
+    global lastHit
+    global lastId
+    global lastEnd
+
+    # try last matching interval first
+    if id == lastId and lastEnd >= key and lastHit != None:
+        if lastHit[0] <= key and lastHit[1] >= key:
+            return lastHit[2] + key - lastHit[0]
+    else:
+        lastHit = None
+        lastId = None
+        lastEnd = None
+
     for d in listOfFakeArrays[id]:
         if d[0] <= key and d[1] >= key:
+            lastHit = d
+            lastId = id
+            lastEnd = d[1]
             return d[2] + key - d[0]
     return key
 
@@ -31,13 +51,17 @@ def evaluateSeed(num):
     return num
 
 
-seeds = []
+seedIntervals = []
 listOfFakeArrays = []
-
 for mapId, block in enumerate(splitInput):
     if mapId == 0:
         tempStr = block.split(":")
-        seeds = tempStr[1].split()
+        seed = None
+        for i, str in enumerate(tempStr[1].split()):
+            if (i % 2) == 0:
+                seed = int(str)
+            else:
+                seedIntervals.append([seed, int(str)])
     else:
         fArray = []
         for i, line in enumerate(StringIO(block)):
@@ -49,17 +73,14 @@ for mapId, block in enumerate(splitInput):
                 fArray.append([keyStart, keyEnd, valueStart])
         listOfFakeArrays.append(fArray)
 
-answer = 9999999999
-result = None
-seed = None
-for i, str in enumerate(seeds):
-    print("i:", i)
-    if (i % 2) == 0:
-        seed = int(str)
-    else:
-        for j in range(int(str)):
-            result = evaluateSeed(seed + j)
-            if result < answer:
-                answer = result
+
+answer = []
+i = 0
+for seedList in seedIntervals:
+    i += 1
+    print(i)
+
+    for j in range(seedList[1]):
+        answer.append(evaluateSeed(seedList[0] + j))
 
 print("Answer:", min(answer))
