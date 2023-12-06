@@ -47,9 +47,10 @@ for mapId, block in enumerate(splitInput):
                 fArray.append([keyStart, keyEnd, valueStart])
         listOfFakeArrays.append(fArray)
 
-answer = []
+answer = None
 for seed in seeds:
-    num = int(seed)
-    answer.append(evaluateSeed(num))
+    result = evaluateSeed(int(seed))
+    if answer == None or result < answer:
+        answer = result
 
-print("Answer:", min(answer))
+print("Answer:", answer)

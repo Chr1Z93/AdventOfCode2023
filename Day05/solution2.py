@@ -13,34 +13,14 @@ from io import StringIO
 # get correct subfolder path
 scriptPath = Path(__file__).resolve()
 scriptDir = scriptPath.parent
-inputPath = scriptDir / "input.txt"
+inputPath = scriptDir / "example.txt"
 data = Path(inputPath).read_text()
 splitInput = data.split("\n\n")
 
-lastHit = None
-lastId = None
-lastEnd = None
-
 
 def getValueFromFakeArray(id, key):
-    global lastHit
-    global lastId
-    global lastEnd
-
-    # try last matching interval first
-    if id == lastId and lastEnd >= key and lastHit != None:
-        if lastHit[0] <= key and lastHit[1] >= key:
-            return lastHit[2] + key - lastHit[0]
-    else:
-        lastHit = None
-        lastId = None
-        lastEnd = None
-
     for d in listOfFakeArrays[id]:
         if d[0] <= key and d[1] >= key:
-            lastHit = d
-            lastId = id
-            lastEnd = d[1]
             return d[2] + key - d[0]
     return key
 
@@ -74,13 +54,15 @@ for mapId, block in enumerate(splitInput):
         listOfFakeArrays.append(fArray)
 
 
-answer = []
+answer = None
 i = 0
 for seedList in seedIntervals:
     i += 1
     print(i)
 
     for j in range(seedList[1]):
-        answer.append(evaluateSeed(seedList[0] + j))
+        result = evaluateSeed(seedList[0] + j)
+        if answer == None or result < answer:
+            answer = result
 
-print("Answer:", min(answer))
+print("Answer:", answer)
