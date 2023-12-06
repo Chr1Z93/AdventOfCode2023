@@ -13,35 +13,44 @@ from io import StringIO
 # get correct subfolder path
 scriptPath = Path(__file__).resolve()
 scriptDir = scriptPath.parent
-inputPath = scriptDir / "example.txt"
+inputPath = scriptDir / "input.txt"
 data = Path(inputPath).read_text()
 splitInput = data.split("\n\n")
 
 
 def getValueFromFakeArray(id, key):
-    for d in listOfFakeArrays[id]:
-        if d[0] <= key and d[1] >= key:
+    for i, d in enumerate(listOfFakeArrays[id]):
+        if d[0] > key:
+            return key
+        elif d[1] < key:
+            continue
+        else:
+            listOfFakeArrays[id] = listOfFakeArrays[id][i:]
             return d[2] + key - d[0]
     return key
 
 
 def evaluateSeed(num):
-    for i in range(0, 7):
-        num = getValueFromFakeArray(i, num)
+    for id in range(0, 7):
+        num = getValueFromFakeArray(id, num)
     return num
+
+
+def getFirstEntry(entry):
+    return entry[0]
 
 
 seedIntervals = []
 listOfFakeArrays = []
 for mapId, block in enumerate(splitInput):
     if mapId == 0:
-        tempStr = block.split(":")
         seed = None
-        for i, str in enumerate(tempStr[1].split()):
+        for i, str in enumerate(block.split(":")[1].split()):
             if (i % 2) == 0:
                 seed = int(str)
             else:
                 seedIntervals.append([seed, int(str)])
+        seedIntervals.sort(key=getFirstEntry)
     else:
         fArray = []
         for i, line in enumerate(StringIO(block)):
@@ -51,18 +60,14 @@ for mapId, block in enumerate(splitInput):
                 keyEnd = keyStart + int(tempStr[2]) - 1
                 valueStart = int(tempStr[0])
                 fArray.append([keyStart, keyEnd, valueStart])
+        fArray.sort(key=getFirstEntry)
         listOfFakeArrays.append(fArray)
 
-
 answer = None
-i = 0
-for seedList in seedIntervals:
-    i += 1
-    print(i)
-
+for i, seedList in enumerate(seedIntervals):
+    print("Seed id:", i)
     for j in range(seedList[1]):
         result = evaluateSeed(seedList[0] + j)
         if answer == None or result < answer:
             answer = result
-
 print("Answer:", answer)
