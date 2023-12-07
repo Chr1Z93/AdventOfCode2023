@@ -2,6 +2,8 @@
 # A hand consists of five cards labeled one of A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, or 2.
 # The relative strength of each card follows this order, where A is the highest and 2 is the lowest.
 # To play Camel Cards, you are given a list of hands and their corresponding bid.
+# Now, J cards are jokers - wildcards that can act like whatever card would make the hand the strongest type possible.
+# To balance this, J cards are now the weakest individual cards, weaker even than 2.
 # Find the rank of every hand in your set. What are the total winnings?
 
 from pathlib import Path
@@ -13,7 +15,7 @@ scriptDir = scriptPath.parent
 inputPath = scriptDir / "input.txt"
 f = open(inputPath)
 
-cardList = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
+cardList = ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
 
 
 # returns positive if the first card is better
@@ -40,12 +42,19 @@ def compareHands(hd1, hd2):
 
 # count card occurences in hand
 def getCardCounts(hand):
+    if hand == "JJJJJ":
+        return [5]
+
     cardCounts = []
+    jokerCount = 0
     for c in cardList:
         count = hand.count(c)
-        if count != 0:
+        if c == "J":
+            jokerCount = count
+        elif count != 0:
             cardCounts.append(count)
     cardCounts.sort(reverse=True)
+    cardCounts[0] = cardCounts[0] + jokerCount
     return cardCounts
 
 
@@ -84,6 +93,5 @@ data.sort(key=cmp_to_key(compareHands))
 # calculate total winnings
 answer = 0
 for i, hd in enumerate(data):
-    # print(hd["hand"], hd["rating"], hd["bid"])
     answer += (i + 1) * hd["bid"]
 print(answer)
