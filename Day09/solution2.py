@@ -2,6 +2,7 @@
 # Each line in the report contains the history of a single value.
 # To best protect the oasis, your environmental report should include a prediction of the next value in each history.
 # To do this, start by making a new sequence from the difference at each step of your history.
+# Analyze your OASIS report again, this time extrapolating the previous value for each history.
 # What is the sum of these extrapolated values?
 
 from pathlib import Path
@@ -19,6 +20,9 @@ def getPrediction(str):
     values.append(str.split())
     for i in range(0, len(values[0])):
         values[0][i] = int(values[0][i])
+
+    # reverse the input vaules
+    values[0].reverse()
 
     # parse differences
     vList = values[0]
