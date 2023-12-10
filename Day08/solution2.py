@@ -6,11 +6,12 @@
 
 from pathlib import Path
 from re import findall
+from math import lcm
 
 # get correct subfolder path
 scriptPath = Path(__file__).resolve()
 scriptDir = scriptPath.parent
-inputPath = scriptDir / "example.txt"
+inputPath = scriptDir / "input.txt"
 f = Path(inputPath).read_text()
 splitInput = f.split("\n\n")
 
@@ -38,6 +39,7 @@ for line in splitInput[1].split("\n"):
 
 i = 0
 keepGoing = True
+zLoops = []
 while keepGoing:
     keepGoing = False
     id = instructions[i % length]
@@ -45,8 +47,18 @@ while keepGoing:
     for loc in locations:
         newLoc = map[loc][id]
         newLocations.append(newLoc)
+        if newLoc[2] == "Z":
+            zLoops.append(i)
         if not keepGoing and newLoc[2] != "Z":
             keepGoing = True
     locations = newLocations
     i += 1
-    print("Id:", i, "Locations:", locations)
+    if len(zLoops) >= 4 * len(locations):
+        keepGoing = False
+print(len(locations), zLoops)
+# print(lcm(*zLoops))
+zMulti = []
+for j, zLoop in enumerate(zLoops):
+    zMulti.append(zLoop / zLoops[j % 6])
+print(zMulti)
+print("Id:", i, "Locations:", locations)
